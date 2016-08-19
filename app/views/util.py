@@ -23,6 +23,7 @@ def render_template( source, show_blog=None, show_projects=None, **context):
 
     if show_blog is None:
         show_blog = bool(app.models.Post.query.all())
+    print("Show blog:{0}".format(show_blog))
 
     if show_projects is None:
         show_projects = bool(app.models.Project.query.all())
