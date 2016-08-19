@@ -14,6 +14,7 @@ class LoginForm(flask_wtf.Form):
 
 
 class EditForm(flask_wtf.Form):
+    """Form used for editing a user."""
     nickname = wtforms.StringField(
         'nickname',
         validators=[validators.DataRequired()]
@@ -35,6 +36,17 @@ class EditForm(flask_wtf.Form):
 
 
 class PostForm(flask_wtf.Form):
+    """
+    Form used for composing or editing a post or project.
+
+    *Fields:*
+
+        :``title``: `string` the title of the post
+        :``post``:  `string` the body of the post
+        :``slug``:  `string` the slug for the post
+
+    """
+
     title = wtforms.StringField(
         'title',
         validators=[validators.Length(
