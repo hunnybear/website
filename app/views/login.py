@@ -33,10 +33,11 @@ def logout():
     flask_login.logout_user()
     return flask.redirect(flask.url_for('index'))
 
+
 @app.application.route('/login')
 def login():
     """
-    I'm only using google authentication, so this is just a 
+    I'm only using google authentication, so this is just a
     convenience URL for me
     """
 

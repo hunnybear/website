@@ -5,6 +5,8 @@ import app
 import app.forms
 import app.models
 
+import app.views.util
+
 from app import config
 
 
@@ -22,7 +24,7 @@ def _show_user(user, page=1):
 
     posts = user.posts.paginate(page, config.POSTS_PER_PAGE, False)
 
-    return flask.render_template(
+    return app.views.util.render_template(
         'user.html',
         user=user,
         posts=posts
@@ -59,4 +61,4 @@ def edit_user():
         form.about_me.data = flask.g.user.about_me
         form.url_subpath.data = flask.g.user.url_name
 
-    return flask.render_template('user_edit.html', form=form)
+    return app.views.util.render_template('user_edit.html', form=form)

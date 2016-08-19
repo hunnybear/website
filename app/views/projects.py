@@ -11,13 +11,15 @@ import flask
 import app
 import app.models
 
+import app.views.util
+
 from app import config
 
 APPLICATION = app.application
 
 
 @APPLICATION.route('/projects')
-@APPLICATION.route('/projects/<int:page>' )
+@APPLICATION.route('/projects/<int:page>')
 def projects(page=1):
     """
     view for the projects page
@@ -26,7 +28,7 @@ def projects(page=1):
     user = flask.g.user
     posts = app.models.Project.query.paginate(page, config.POSTS_PER_PAGE, False)
 
-    return flask.render_template(
+    return app.views.util.render_template(
         'projects.html',
         title='Hunnybear Jamboree',
         user=user,

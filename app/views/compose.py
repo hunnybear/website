@@ -8,6 +8,8 @@ import app
 import app.forms
 import app.models
 
+import app.views.util
+
 
 def _show_compose(post=None, post_class=app.models.Post):
 
@@ -40,11 +42,12 @@ def _show_compose(post=None, post_class=app.models.Post):
         form.post.data = post.body
         form.slug.data = post.slug
 
-    return flask.render_template(
+    return app.views.util.render_template(
         'compose.html',
         title='Compose post',
         form=form
     )
+
 
 @app.application.route('/blog/compose', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -67,6 +70,7 @@ def edit(slug):
 def compose_project():
     return _show_compose(post_class=app.models.Project)
 
+
 @app.application.route('/projects/edit/<slug>', methods=['GET', 'POST'])
 @flask_login.login_required
 def edit_project(slug):
@@ -78,4 +82,4 @@ def edit_project(slug):
 
 
 
-    
+

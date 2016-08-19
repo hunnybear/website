@@ -2,14 +2,10 @@
 views.py
 """
 
-# 3rd party imports
-import flask
-
 # local imports
 import app
 import app.models
-
-from app import config
+import app.views.util
 
 APPLICATION = app.application
 
@@ -17,7 +13,7 @@ APPLICATION = app.application
 @APPLICATION.route('/')
 @APPLICATION.route('/index')
 def index():
-    return flask.render_template(
+    return app.views.util.render_template(
         'index.html',
         title='Hunnybear Jamboree',
         is_splash=True,

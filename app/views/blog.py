@@ -13,6 +13,8 @@ import app.models
 
 from app import config
 
+import app.views.util
+
 APPLICATION = app.application
 
 
@@ -32,10 +34,10 @@ def blog(page=1):
 
 @APPLICATION.route('/blog/<slug>')
 def detail_blog(slug):
-	published_only = not flask.g.user.is_authenticated
+    published_only = not flask.g.user.is_authenticated
 
-	post = app.models.Post.get_by_slug(slug, published_only=published_only)
-	if post is None:
-		return flask.render_template('post_detail.html', post=post), 404
-	else:
-		return flask.render_template('post_detail.html', post=post)
+    post = app.models.Post.get_by_slug(slug, published_only=published_only)
+    if post is None:
+        return app.views.util.render_template('post_detail.html', post=post), 404
+    else:
+        return app.views.util.render_template('post_detail.html', post=post)
