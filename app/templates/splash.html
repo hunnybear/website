@@ -1,0 +1,12 @@
+{% extends "content.html" %}
+<!-- splash template -->
+{% block content_wrapper %}
+ <!-- content -->
+<div class="container-fluid">
+     <div class="row-fluid">
+     	<div class="centering">
+        	{% block content %}{% endblock %}
+        </div> <!-- centering -->
+	</div><!-- row-fluid -->
+</div><!-- container-fluid -->
+{% endblock %}

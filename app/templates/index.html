@@ -1,0 +1,19 @@
+{% extends "splash.html" %}
+{% block content %}
+<div class="centering">
+	<div class="vcard brand">
+		<div class="vcard-portrait">
+			 <img src="{{ get_brand_img(256) }}" class="img-circle"
+	                 alt="Tyler Jachetta - Tools Developer" />
+		</div> <!-- vcard-portrait -->
+		<div class="vcard-details">
+			<h1 class="vcard-name brand-name">Tyler<br />Jachetta</h1>
+					<h3 class="vcard-title text-muted">Software Developer</h2>
+					<h4 class="vcard-email small">
+						<a href="mailto:me@tylerjachetta.net">me@tylerjachetta.net</a>
+					</h3>
+		</div> <!-- vcard-details -->
+	</div> <!-- vcard -->
+</div> <!-- vertical_center_row -->
+{% endblock %}
+

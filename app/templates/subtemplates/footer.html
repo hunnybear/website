@@ -1,0 +1,42 @@
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    {% if config.SHOW_LINKEDIN %}
+                    <li>
+                        <a href="{{ config.LINKEDIN_URL }}">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if config.SHOW_FACEBOOK %}
+                    <li>
+                        <a href="#">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if config.SHOW_GITHUB %}
+                    <li>
+                        <a href="#">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <p class="copyright text-muted">Copyright &copy; Tyler Jachetta 2016</p>
+            </div>
+        </div>
+    </div>
+</footer>

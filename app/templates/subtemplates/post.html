@@ -1,0 +1,12 @@
+ <div class="post-preview">
+    <a href="{{ post.get_url() }}">
+        <h2 class="post-title">
+            {{ post.title }}
+        </h2>
+    </a>
+    <p class="post-body">
+       {{ post.get_preview() }}
+    </p>
+
+    <p class="post-meta">Posted by <a href="{{ url_for( 'user', user_url_id=post.author.get_url_name() ) }}">{{ post.author.get_display_name() }}</a> on {{ momentjs(post.timestamp).calendar() }}</p>
+</div> <!-- post-preview -->

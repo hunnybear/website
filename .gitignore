@@ -1,0 +1,7 @@
+*.pyc
+*.psd
+tmp/*
+db_repository
+app.db
+*.log
+*.sublime-workspace

@@ -1,0 +1,27 @@
+<!-- extends admin_base.html -->
+{% extends "admin_base.html" %}
+
+{% block content %}
+	<form method="post" name="post">
+		{{ form.hidden_tag( ) }}
+		<div id="input_container">
+			<div id="input">
+				<div id="title_input">
+					{{ form.title(size=30, maxlength=config.MAX_POST_TITLE_LENGTH) }}
+				</div>
+				<div id="body_input">
+					{{ form.post(cols=32, rows=4, maxlength=config.MAX_POST_LENGTH) }}
+				</div>
+				<div id="slug_input">
+					{{ form.slug(size=30, maxlength=config.MAX_SLUG_LENGTH) }}
+				</div>
+			</div>
+			{% for error in form.post.errors %}
+				<span class="error_message" style="color: red;">[{{ error }}]</span>
+			{% endfor %}
+			<span>
+				<input type="submit" value="Post">
+			</span>
+		</div><!--input container -->
+	</form>
+{% endblock %}
