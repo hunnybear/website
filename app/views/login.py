@@ -8,6 +8,7 @@ import flask_login
 # blaaawwwg imports
 import app
 import app.auth
+import app.flash_messages
 import app.forms
 import app.models
 
@@ -47,6 +48,7 @@ def login():
 @app.application.route('/callback/<provider>')
 def callback(provider):
     commit_session = False
+    app.application.logger.debug("auth callback for provider {0}".format(provider))
 
     if not flask_login.current_user.is_anonymous:
         return flask.redirect(flask.url_for('index'))
@@ -56,22 +58,23 @@ def callback(provider):
 
     if email is None:
         # I need a valid email address
-        flask.flash("Authentication failed.")
+        flask.flash(app.flash_messages.AUTH_FAILED)
         return flask.redirect(flask.url_for('index'))
 
     user = app.models.User.query.filter_by(email=email).first()
     if not user:
         user = app.models.User(social_id=social_id, name=name, email=email)
         app.db.session.add(user)
-        app.db.session.commit()
-
-    if user.name != name:
-        user.name = name
         commit_session = True
 
-    if user.avatar_path != picture:
-        user.avatar_path = picture
-        commit_session = True
+    else:
+        if user.name != name:
+            user.name = name
+            commit_session = True
+
+        if user.avatar_path != picture:
+            user.avatar_path = picture
+            commit_session = True
 
     if commit_session:
         app.db.session.commit()

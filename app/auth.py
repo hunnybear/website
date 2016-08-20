@@ -60,14 +60,10 @@ class GoogleSignIn(OAuthSignIn):
     """
 
     def __init__(self):
-        # We can't use json.load directly on the file-like object because
-        # python 3 and bytes
-        googleinfo = urllib.request.urlopen(GOOGLE_INFO_URL)
-        googlieinfo_data = googleinfo.read()
-        # TODO use googleinfo data to get the encoding
-        google_params = json.loads(googlieinfo_data.decode('utf-8'))
-
         super(GoogleSignIn, self).__init__('google')
+
+        google_params = self._get_google_params()
+
         self.service = rauth.OAuth2Service(
             name='google',
             client_id=self.consumer_id,
@@ -76,6 +72,16 @@ class GoogleSignIn(OAuthSignIn):
             base_url=google_params.get('userinfo_endpoint'),
             access_token_url=google_params.get('token_endpoint')
         )
+
+    def _get_google_params(self):
+         # We can't use json.load directly on the file-like object because
+        # python 3 and bytes
+        googleinfo = urllib.request.urlopen(GOOGLE_INFO_URL)
+        googlieinfo_data = googleinfo.read()
+        # TODO use googleinfo data to get the encoding
+        google_params = json.loads(googlieinfo_data.decode('utf-8'))
+
+        return google_params
 
     def authorize(self):
         return flask.redirect(

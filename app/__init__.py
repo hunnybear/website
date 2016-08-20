@@ -30,7 +30,7 @@ for member_name, member in inspect.getmembers(app.jinja_util):
         application.jinja_env.globals[member_name] = member
 
 application.logger.setLevel(logging.INFO)
-application.logger.addHandler(app.log.FILE_HANDLER)
+app.log.setup_application_handler(application)
 application.logger.info('microblog startup')
 
 # importing views and models register them in the module. This stuff has to be

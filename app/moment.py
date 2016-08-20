@@ -16,6 +16,7 @@ class moment(object):
         return jinja2.Markup(markup_str)
 
     def format(self, fmt):
+        """Create a format string that can be inserted into Jinja"""
         format_str = 'format("{0}")'.format(fmt)
         return self.render(format_str)
 
