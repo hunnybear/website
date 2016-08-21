@@ -248,7 +248,7 @@ class Post(DB.Model):
     published = DB.Column(DB.Boolean(), index=True)
     timestamp = DB.Column(DB.DateTime)
 
-    post_type_id = DB.Column(DB.Integer, DB.ForeignKey('post.type_id'))
+    post_type_id = DB.Column(DB.Integer, DB.ForeignKey('post_type.type_id'))
 
     @sqlalchemy.ext.declarative.declared_attr
     def user_id(cls):
