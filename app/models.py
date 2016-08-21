@@ -218,7 +218,7 @@ class Post_Type(DB.Model):
         UIs.
         """
 
-        return cls.query.all().order_by(cls.display_priority)
+        return cls.query.order_by(cls.display_priority).all()
 
     @classmethod
     def get_by_type_id(cls, id):
