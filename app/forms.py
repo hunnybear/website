@@ -45,6 +45,8 @@ class PostForm(flask_wtf.Form):
             max=config.MAX_POST_TITLE_LENGTH
         )]
     )
+    post_type = wtforms.SelectField('Post Type', coerce=int)
+
     post = wtforms.TextAreaField('post', validators=[validators.DataRequired()])
 
     slug = wtforms.StringField(

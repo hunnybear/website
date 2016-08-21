@@ -21,15 +21,14 @@ def render_template( source, show_blog=None, show_projects=None, **context):
 
     """
 
-    if show_blog is None:
-        show_blog = bool(app.models.Post.query.all())
+    post_types = [ ]
 
-    if show_projects is None:
-        show_projects = bool(app.models.Project.query.all())
+    for post_type in app.models.Post_Type.get_ordered():
+        if post_type.posts:
+            post_types.append(post_type.type_url_name, post_type.type_name)
 
     return flask.render_template(
         source,
-        show_blog=show_blog,
-        show_projects=show_projects,
+        post_types=post_types
         **context
     )

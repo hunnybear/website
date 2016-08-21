@@ -1,10 +1,12 @@
 <ul class="pager">
     {% if posts.has_prev %}
-    <li class="previous"><a href="{{ url_for(posts.first().get_index_name(), page = posts.prev_num) }}">Newer posts</a></li>
+    <!--TODO this index name stuff has to go-->
+    <li class="previous"><a href="{{ url_for(posts.first().INDEX_NAME, page = posts.prev_num) }}">Newer posts</a></li>
     {% else %}
     <li class="previous disabled"><a href="#">Newer posts</a></li>
     {% endif %}
     {% if posts.has_next %}
+    <!-- Again with the index name -->
     <li class="next"><a href="{{ url_for(posts.first().get_index_name(), page = posts.next_num) }}">Older posts</a></li>
     {% else %}
     <li class="next disabled"><a href="#">Older posts</a></li>

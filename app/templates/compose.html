@@ -9,6 +9,9 @@
 				<div id="title_input">
 					{{ form.title(size=30, maxlength=config.MAX_POST_TITLE_LENGTH) }}
 				</div>
+				<div id="post_type_input">
+					{{ form.post_type(size=30) }}
+				</div>
 				<div id="body_input">
 					{{ form.post(cols=32, rows=4, maxlength=config.MAX_POST_LENGTH) }}
 				</div>

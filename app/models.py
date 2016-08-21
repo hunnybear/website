@@ -45,7 +45,6 @@ class User(flask_login.UserMixin, DB.Model):
       :``name``:        `str` user real name
       :``nickname``:    `str` user nickname
       :``email``:       `str` user email
-      :``about_me``:    `str` user description, might phase this out
       :``last_seen``:   `datetime.datetime` last time user logged in
       :``posts``:       `collection<Post>` collection of Posts by the user
       :``projects``:    `collection<Project>` collection of Projects by the user
@@ -70,11 +69,9 @@ class User(flask_login.UserMixin, DB.Model):
     )
 
     email = DB.Column(DB.String(120), index=True, unique=True)
-    about_me = DB.Column(DB.String(config.ABOUT_ME_LENGTH))
     last_seen = DB.Column(DB.DateTime)
 
     posts = DB.relationship('Post', backref='author', lazy='dynamic')
-    projects = DB.relationship('Project', backref='author', lazy='dynamic')
 
     @classmethod
     def query_for_url(cls, url_name):
@@ -156,14 +153,91 @@ class User(flask_login.UserMixin, DB.Model):
 
         return url_name
 
-class _Base_Post(object):
+
+class Post_Type(DB.Model):
     """
-    Abstract base object for posts, which includes blog posts and project posts.
+    Instead of having seperate classes for projects and posts, just make a table
+    for post types, and then I can slim down my tables and classes, keep things
+    cleaner.
+
+    *Properties:*
+
+        :``type_id``:           `int`   Primary key
+        :``type_name``:         `str`   Pretty name of the post type
+        :``type_url_name``:     `str`   URL-safe name for the type
+        :``display_priority``:  `int`   priority/order for displaying this post
+                                        type in UI. Low = first. Note that
+                                        having multipe post types with the same
+                                        priority could lead to bugs, so I've
+                                        made this unique
+        :``posts``:             `relationship<Post>` all posts of this type
     """
 
-    _POST_URL_BASE = '/blog/{slug}'
-    _EDIT_URL_BASE = '/blog/edit/{slug}'
-    _INDEX_NAME = 'blog'
+    type_id = DB.Column(DB.Integer, primary_key=True)
+    type_name = DB.Column(DB.String(config.MAX_TYPE_NAME_LENGTH), unique=True)
+    type_url_name = DB.Column(DB.String(config.MAX_TYPE_NAME_LENGTH), unique=True)
+    display_priority = DB.Column(DB.Integer, unique=True)
+
+    posts = DB.relationship('Post', backref='post_type', lazy='dynamic')
+
+    # We can add observers here when
+    _observers = set()
+
+    @classmethod
+    def add_observer(cls, observer):
+        """
+        add an observer function, which will be notified any time a post type
+        is saved.
+        """
+
+        cls._observers.add(observer)
+
+    def save(self, *args, **kwargs):
+        """
+        Extend DB.Model's save so that observer functions can be notified of
+        added or modified post types
+        """
+
+        res = super().save(*args, **kwargs)
+
+        # Notify all observers that a post type has been added or modified
+        for observer in self._observers:
+            observer(self)
+
+        return res
+
+    @classmethod
+    def get_ordered(cls):
+        """
+        Return all class types ordered in the order that they should appear in
+        UIs.
+        """
+
+        return cls.query.all().order_by(cls.display_priority)
+
+    @classmethod
+    def get_by_type_id(cls, type_id):
+
+        return cls.query.filter(cls.type_id == type_id).first()
+
+
+class Post(DB.Model):
+    """
+    Class for a post in a blog or any sort of other bloggy-type thing (projects
+    area of the site eventually, etc.)
+
+    *Properties:*
+
+        :``id``:        `int`   primary key
+        :``title``:     `str`   the title of the post
+        :``slug``:      `str`   the URL slug for the post
+        :``body``:      `str`   the body text of the post, with markdown
+                                formatting.
+        :``published``: `bool`  Set to True to publish
+    """
+
+    _POST_URL_BASE = '/{type_url_name}/{slug}'
+    _EDIT_URL_BASE = '/{type_url_name}/edit/{slug}'
 
     __searchable__ = ['body', 'title']
 
@@ -179,9 +253,13 @@ class _Base_Post(object):
         return DB.Column(DB.Integer, DB.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Post {0}>'.format(self.body)
+        return '<Post {0}>'.format(self.title)
 
     def save(self, *args, **kwargs):
+        """
+        Save the post, and ensure that there is a slug. Extend's DB.Model's
+        save method.
+        """
         if not self.slug:
             self.slug = re.sub('[^\w]+', '-', self.title.lower())
 
@@ -190,12 +268,21 @@ class _Base_Post(object):
         return ret
 
     @classmethod
-    def public(cls):
+    def public(cls, post_type=None):
         """
         Return a query object that only queries published posts
         """
 
-        return cls.query().filter(cls.published == True)
+        if post_type is None:
+            return cls.query().filter(cls.published == True)
+
+        else:
+            return cls.query().filter(
+                sqlalchemy.and_(
+                    cls.post_type == post_type,
+                    cls.published == True
+                )
+            )
 
     @classmethod
     def get_by_slug(cls, slug, published_only=False):
@@ -216,21 +303,21 @@ class _Base_Post(object):
         if for_edit is True
         """
 
+        type_url_name = self.post_type.type_url_name
+
         if for_edit:
-            url = self._EDIT_URL_BASE.format(slug=self.slug)
+            url = self._EDIT_URL_BASE.format(
+                type_url_name=type_url_name,
+                post_slug=self.slug
+            )
         else:
-            url = self._POST_URL_BASE.format(slug=self.slug)
+            url = self._POST_URL_BASE.format(
+                type_url_name=type_url_name,
+                slug=self.slug
+            )
 
         return url
 
-    @classmethod
-    def get_index_name(cls):
-        """
-        Just expose the index name, probably not actually worth a function.
-        consider pulling this out and just directly accessing the INDEX_NAME
-        constant externally.
-        """
-        return cls._INDEX_NAME
 
     def get_preview(self):
         # TODO
@@ -258,21 +345,6 @@ class _Base_Post(object):
             # maxwidth=app.config['SITE_WIDTH']
         )
         return flask.Markup(oembed_content)
-
-
-class Post(_Base_Post, DB.Model):
-    """
-    Blog posts
-    """
-
-
-class Project(_Base_Post, DB.Model):
-    """
-    Subclass of post used for projects
-    """
-    _EDIT_URL_BASE = r'/projects/edit/{slug}'
-    _POST_URL_BASE = r'/projects/{slug}'
-    _INDEX_NAME = 'projects'
 
 
 @LM.user_loader

@@ -20,8 +20,8 @@
         <div class="collapse navbar-collapse" id="navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{{ url_for('index') }}">Home</a></li>
-                {% if show_projects %}<li><a href="{{ url_for('projects') }}">Projects</a></li>{% endif %}
-                {% if show_blog %}<li><a href="{{ url_for('blog') }}">Blog</a></li>{% endif %}
+                {% for type_url, type name in post_types %}<li><a href="{{ url_for('type_url') }}">{{ type_name }}</a></li>{% endif %}
+                {% endfor %}
                 {% if g.user.is_authenticated %}
                 <li><a href="{{ url_for('compose') }}">Compose</a></li>
                 <li><a href="{{ url_for('me') }}">Your Profile</a></li>
