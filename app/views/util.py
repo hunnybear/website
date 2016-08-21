@@ -29,6 +29,6 @@ def render_template( source, show_blog=None, show_projects=None, **context):
 
     return flask.render_template(
         source,
-        post_types=post_types
+        post_types=post_types,
         **context
     )
