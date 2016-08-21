@@ -21,7 +21,8 @@ def _show_compose(post=None):
 
     if form.validate_on_submit():
 
-        post_type = app.models.Post_Type.get_by_type_id(form.post_type)
+        post_type = app.models.Post_Type.get_by_type_id(form.post_type.data)
+
         if post is None:
             post = app.models.Post(
                 title=form.title.data,
