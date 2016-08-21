@@ -6,6 +6,7 @@ Module containing view for reading the blog
 
 # 3rd party imports
 import flask
+import sqlalchemy.exc
 
 # local imports
 import app
@@ -58,7 +59,16 @@ def _create_post_type_url_rules(post_type):
     APPLICATION.add_url_rule(slug_rule, slug_endpoint, slug_function)
 
 # Register views for all post types.
-for post_type in app.models.Post_Type.query.all():
+
+try:
+    _post_types = app.models.Post_Type.query.all()
+except sqlalchemy.exc.OperationalError:
+    # when we're first creating the DB, this table doens't exist, that's fine
+    # (only in the case that we're starting the app to create the DB)
+    # should probably put some better catching here to make sure this doesn't
+    # happen after db creation
+    _post_types = []
+for post_type in _post_types:
     _create_post_type_url_rules(post_type)
 
 app.models.Post_Type.add_observer(_create_post_type_url_rules)
