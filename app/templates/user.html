@@ -8,7 +8,6 @@
 		</span>
 		<span>
 			<h1>User: {{ user.get_display_name( ) }}!</h1>
-			{% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
         	{% if user.last_seen %}<p><i>Last seen on: {{ momentjs(user.last_seen).calendar() }}</i></p>{% endif %}
         	{% if user.id == g.user.id %}<p><a href="{{ url_for('edit_user') }}">Edit Profile</a></p>{% endif %}
 		</span>

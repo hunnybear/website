@@ -20,15 +20,6 @@ class EditForm(flask_wtf.Form):
         validators=[validators.DataRequired()]
     )
 
-    about_me = wtforms.TextAreaField(
-        'about_me',
-        validators=[
-            validators.Length(
-                min=0,
-                max=config.ABOUT_ME_LENGTH
-            )
-        ]
-    )
     url_subpath = wtforms.StringField(
         'url_name',
         validators=[validators.Length(min=0, max=config.URL_NAME_LENGTH)]

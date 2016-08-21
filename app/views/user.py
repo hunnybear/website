@@ -47,7 +47,6 @@ def edit_user():
         url_name = form.url_subpath.data or None
 
         flask.g.user.nickname = form.nickname.data
-        flask.g.user.about_me = form.about_me.data
         flask.g.user.url_name = url_name
 
         app.db.session.add(flask.g.user)

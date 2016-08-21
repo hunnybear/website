@@ -57,6 +57,8 @@ class OAuthSignIn(object):
 class GoogleSignIn(OAuthSignIn):
     """
     OAuth sign in class for google sign ins. Only thing i'm going to be using.
+    Learned how to do this from a tutorial, I'm not going to touch it until I
+    feel more confident in the oAuth Stuff.
     """
 
     def __init__(self):
@@ -93,6 +95,10 @@ class GoogleSignIn(OAuthSignIn):
         )
 
     def callback(self):
+        """
+        Cribbed my whole auth system from a tutorial, I'll come back and make
+        all of this more sensible when I have a better grasp of the oAuth.
+        """
         if 'code' not in flask.request.args:
             return None, None, None, None
 

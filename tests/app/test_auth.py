@@ -21,9 +21,3 @@ class TestGoogle(unittest.TestCase):
 
         }
         self.assertEqual(self.sign_in.provider_name, 'google')
-
-        # Assert that the auth service was called
-
-
-    def test_callback(self):
-        pass
