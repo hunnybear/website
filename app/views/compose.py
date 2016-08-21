@@ -17,7 +17,7 @@ def _show_compose(post=None):
 
     # Set the post type choices
     post_types = app.models.Post_Type.get_ordered()
-    form.post_type.choices = [(post_type.type_id, post_type.type_name) for post_type in post_types]
+    form.post_type.choices = [(post_type.id, post_type.type_name) for post_type in post_types]
 
     if form.validate_on_submit():
 
@@ -50,7 +50,7 @@ def _show_compose(post=None):
         form.title.data = post.title
         form.post.data = post.body
         form.slug.data = post.slug
-        form.post_type = post.post_type.type_id
+        form.post_type = post.post_type.id
 
     return app.views.util.render_template(
         'compose.html',

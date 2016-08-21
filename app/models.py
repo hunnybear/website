@@ -50,6 +50,9 @@ class User(flask_login.UserMixin, DB.Model):
       :``projects``:    `collection<Project>` collection of Projects by the user
 
     """
+
+    __tablename__ = 'user'
+
     id = DB.Column(DB.Integer, primary_key=True)
 
     url_name = DB.Column(
@@ -71,7 +74,7 @@ class User(flask_login.UserMixin, DB.Model):
     email = DB.Column(DB.String(120), index=True, unique=True)
     last_seen = DB.Column(DB.DateTime)
 
-    posts = DB.relationship('Post', back_populates='author')
+    posts = DB.relationship('Post', backref='author')
 
     @classmethod
     def query_for_url(cls, url_name):
@@ -162,7 +165,7 @@ class Post_Type(DB.Model):
 
     *Properties:*
 
-        :``type_id``:           `int`   Primary key
+        :``id``:           `int`   Primary key
         :``type_name``:         `str`   Pretty name of the post type
         :``type_url_name``:     `str`   URL-safe name for the type
         :``display_priority``:  `int`   priority/order for displaying this post
@@ -173,12 +176,14 @@ class Post_Type(DB.Model):
         :``posts``:             `relationship<Post>` all posts of this type
     """
 
-    type_id = DB.Column(DB.Integer, primary_key=True)
+    __tablename__ = 'post_type'
+
+    id = DB.Column(DB.Integer, primary_key=True)
     type_name = DB.Column(DB.String(config.MAX_TYPE_NAME_LENGTH), unique=True)
     type_url_name = DB.Column(DB.String(config.MAX_TYPE_NAME_LENGTH), unique=True)
     display_priority = DB.Column(DB.Integer, unique=True)
 
-    posts = DB.relationship('Post', back_populates='post_type')
+    posts = DB.relationship('Post', backref='post_type')
 
     # We can add observers here when
     _observers = set()
@@ -216,9 +221,9 @@ class Post_Type(DB.Model):
         return cls.query.all().order_by(cls.display_priority)
 
     @classmethod
-    def get_by_type_id(cls, type_id):
+    def get_by_type_id(cls, id):
 
-        return cls.query.filter(cls.type_id == type_id).first()
+        return cls.query.filter(cls.id == id).first()
 
 
 class Post(DB.Model):
@@ -236,6 +241,8 @@ class Post(DB.Model):
         :``published``: `bool`  Set to True to publish
     """
 
+    __tablename__ = 'post'
+
     _POST_URL_BASE = '/{type_url_name}/{slug}'
     _EDIT_URL_BASE = '/{type_url_name}/edit/{slug}'
 
@@ -248,15 +255,8 @@ class Post(DB.Model):
     published = DB.Column(DB.Boolean(), index=True)
     timestamp = DB.Column(DB.DateTime)
 
-    post_type_id = DB.Column(DB.Integer, DB.ForeignKey('post_type.type_id'))
-    post_type = DB.relationship("Post_Type", back_populates="posts")
-
-    author_id = DB.Column(DB.Integer, DB.ForeignKey('author.id'))
-    author = DB.relationship("User", back_populates="posts")
-
-    @sqlalchemy.ext.declarative.declared_attr
-    def user_id(cls):
-        return DB.Column(DB.Integer, DB.ForeignKey('user.id'))
+    post_type_id = DB.Column(DB.Integer, DB.ForeignKey('post_type.id'))
+    user_id = DB.Column(DB.Integer, DB.ForeignKey('user.id'))
 
     def __repr__(self):
         return '<Post {0}>'.format(self.title)
