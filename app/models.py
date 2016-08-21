@@ -71,7 +71,7 @@ class User(flask_login.UserMixin, DB.Model):
     email = DB.Column(DB.String(120), index=True, unique=True)
     last_seen = DB.Column(DB.DateTime)
 
-    posts = DB.relationship('Post', backref='author', lazy='dynamic')
+    posts = DB.relationship('Post', back_populates='author')
 
     @classmethod
     def query_for_url(cls, url_name):
@@ -178,7 +178,7 @@ class Post_Type(DB.Model):
     type_url_name = DB.Column(DB.String(config.MAX_TYPE_NAME_LENGTH), unique=True)
     display_priority = DB.Column(DB.Integer, unique=True)
 
-    posts = DB.relationship('Post', backref='post_type')
+    posts = DB.relationship('Post', back_populates='post_type')
 
     # We can add observers here when
     _observers = set()
@@ -249,6 +249,10 @@ class Post(DB.Model):
     timestamp = DB.Column(DB.DateTime)
 
     post_type_id = DB.Column(DB.Integer, DB.ForeignKey('post_type.type_id'))
+    post_type = DB.relationship("Post_Type", back_populates="posts")
+
+    author_id = DB.Column(DB.Integer, DB.ForeignKey('author.id'))
+    author = DB.relationship("User", back_populates="posts")
 
     @sqlalchemy.ext.declarative.declared_attr
     def user_id(cls):
