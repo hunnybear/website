@@ -47,7 +47,6 @@ class User(flask_login.UserMixin, DB.Model):
       :``email``:       `str` user email
       :``last_seen``:   `datetime.datetime` last time user logged in
       :``posts``:       `collection<Post>` collection of Posts by the user
-      :``projects``:    `collection<Project>` collection of Projects by the user
 
     """
 
@@ -102,7 +101,7 @@ class User(flask_login.UserMixin, DB.Model):
 
     def get_display_name(self):
         """Get the name to be used to display the user"""
-        return self.nickname or self.name or config.DEFAULT_NAME
+        return self.nickname or self.name
 
     def get_url_name(self):
         """get the url name to be used for the user's about page"""
@@ -147,9 +146,10 @@ class User(flask_login.UserMixin, DB.Model):
         """
         Validator function for the url_name field
         """
+
         if url_name is None:
             return url_name  # nullable
-        if ' ' in url_name or '/t' in url_name or '/n' in url_name:
+        if ' ' in url_name or '\t' in url_name or '\n' in url_name:
             raise ValueError('url names cannot have whitespace')
         if url_name.isdigit():
             raise ValueError('url names cannot be integers')
@@ -202,6 +202,17 @@ class Post_Type(DB.Model):
         Extend DB.Model's save so that observer functions can be notified of
         added or modified post types
         """
+
+        if not self.type_url_name:
+            self.type_url_name = re.sub('[^\w]+', '-', self.type_name.lower())
+
+        if not self.display_priority:
+            all_priorities = [post_type.display_priority for post_type in self.query.all() ]
+
+            if all_priorities:
+                self.display_priority = max(all_priorities) + 1
+            else:
+                self.display_priority = 0
 
         res = super().save(*args, **kwargs)
 

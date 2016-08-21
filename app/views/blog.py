@@ -43,7 +43,7 @@ def _create_post_type_url_rules(post_type):
     APPLICATION.add_url_rule(main_rule, endpoint, posts_function)
     # TODO not sure if I need to provide the post function again, I should
     # investigate this.
-    APPLICATION.add_url_rule(paginated_rule, endpoint, post_function)
+    APPLICATION.add_url_rule(paginated_rule, endpoint, posts_function)
 
     slug_endpoint = 'slug_{0}'.format( endpoint )
 

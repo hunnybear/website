@@ -57,7 +57,6 @@ def edit_user():
 
     else:
         form.nickname.data = flask.g.user.nickname
-        form.about_me.data = flask.g.user.about_me
         form.url_subpath.data = flask.g.user.url_name
 
     return app.views.util.render_template('user_edit.html', form=form)
