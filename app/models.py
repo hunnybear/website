@@ -178,7 +178,7 @@ class Post_Type(DB.Model):
     type_url_name = DB.Column(DB.String(config.MAX_TYPE_NAME_LENGTH), unique=True)
     display_priority = DB.Column(DB.Integer, unique=True)
 
-    posts = DB.relationship('Post', backref='post_type', lazy='dynamic')
+    posts = DB.relationship('Post', backref='post_type')
 
     # We can add observers here when
     _observers = set()
@@ -247,6 +247,8 @@ class Post(DB.Model):
     body = DB.Column(DB.Text())
     published = DB.Column(DB.Boolean(), index=True)
     timestamp = DB.Column(DB.DateTime)
+
+    post_type_id = DB.Column(DB.Integer, DB.ForeignKey('post.type_id'))
 
     @sqlalchemy.ext.declarative.declared_attr
     def user_id(cls):
