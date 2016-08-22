@@ -45,6 +45,7 @@ def _show_compose(post=None):
 
         flask.flash('Post Submitted!')
         # TODO maybe if submitted as draft redirect to edit
+        return flask.redirect(flask.url_for(post.post_type.type_url_name))
 
     if post is not None:
         form.title.data = post.title
@@ -73,23 +74,3 @@ def edit(slug):
         return _show_compose(), 404
     else:
         return _show_compose(post)
-
-
-@app.application.route('/projects/compose', methods=['GET', 'POST'])
-@flask_login.login_required
-def compose_project():
-    return _show_compose(post_class=app.models.Project)
-
-
-@app.application.route('/projects/edit/<slug>', methods=['GET', 'POST'])
-@flask_login.login_required
-def edit_project(slug):
-    project = app.models.Project.get_by_slug(slug)
-    if project is None:
-        return _show_compose(post_class=app.models.Project), 404
-    else:
-        return _show_compose(project)
-
-
-
-
