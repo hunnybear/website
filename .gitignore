@@ -5,3 +5,4 @@ db_repository
 app.db
 *.log
 *.sublime-workspace
+__pycache__

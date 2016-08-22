@@ -197,6 +197,64 @@ class Post_Type(DB.Model):
 
         cls._observers.add(observer)
 
+    def _get_post_query(self):
+        """
+        Return a SQLAlchemy query object for getting posts of this post type
+        """
+        query = app.db.session.query(Post).filter(Post.post_type_id == self.id)
+        return query
+
+    def get_posts(self):
+        """
+        Get all posts of this post type.
+
+        *Returns:*
+
+            :``posts``: `list<Post>`    all posts of thist post type
+        """
+        query = self._get_post_query()
+        return query.all()
+
+    def get_posts_paginated(self, page=1, per_page=None):
+        """
+        Get paginated list of posts of this type
+
+        *Keyword Arguments:*
+
+            :``page``:      `int`   1-indexed page number for pagination
+            :``per_page``:  `int`   number of posts per page
+
+        *Returns:*
+
+            :``posts``:     `list<Post>`    list of posts on page <page>
+        """
+
+        if per_page is None:
+            per_page = config.POSTS_PER_PAGE
+
+        query = self._get_post_query()
+        posts = query.paginate(page, per_page, False)
+
+        return posts
+
+    def get_by_slug(self, slug, published_only=False):
+        """
+        Get a post of this type by its slug
+        """
+
+        query = self._get_post_query()
+
+        if published_only:
+            post = query.filter(
+                sqlalchemy.and_(
+                    app.models.Post.slug == slug,
+                    app.models.Post.published == True
+                )
+            ).one_or_none()
+        else:
+            post = cls.query.filter(app.models.Post.slug == slug).one_or_none()
+        return post
+
     def save(self, *args, **kwargs):
         """
         Extend DB.Model's save so that observer functions can be notified of
@@ -308,13 +366,13 @@ class Post(DB.Model):
 
     @classmethod
     def get_by_slug(cls, slug, published_only=False):
+
         if published_only:
-            post = cls.query.filter(
-                sqlalchemy.and_(
-                    app.models.Post.slug == slug,
-                    app.models.Post.published == True
-                )
+            sql_filter = sqlalchemy.and_(
+                app.models.Post.slug == slug,
+                app.models.Post.published == True
             )
+            post = cls.query.filter(sql_filter).one_or_none()
         else:
             post = cls.query.filter(app.models.Post.slug == slug).one_or_none()
         return post

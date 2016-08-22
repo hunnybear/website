@@ -12,41 +12,31 @@ import sqlalchemy.exc
 import app
 import app.models
 
-from app import config
-
 import app.views.util
 
 APPLICATION = app.application
 
 
-def _create_post_type_url_rules(post_type):
-    main_rule = '/{0}'
-    paginated_rule = main_rule + '/<int:page>'
-    slug_rule = main_rule + '/<slug>'
-
-    endpoint = post_type.type_url_name
+def _make_posts_function(post_type):
 
     # horay closures.
     def posts_function(page=1):
 
         user = flask.g.user
         # TODO maybe move this from a const to the post type.
-        posts = post_type.posts.query.paginate(page, config.POSTS_PER_PAGE, False)
+        posts = post_type.get_posts_paginated(page=page)
 
-        return flask.render_template(
+        return app.views.util.render_template(
             'blog.html',
             title="Hunnybear Jamboree",
             user=user,
             posts=posts
         )
 
-    APPLICATION.add_url_rule(main_rule, endpoint, posts_function)
-    # TODO not sure if I need to provide the post function again, I should
-    # investigate this.
-    APPLICATION.add_url_rule(paginated_rule, endpoint, posts_function)
+    return posts_function
 
-    slug_endpoint = 'slug_{0}'.format( endpoint )
 
+def _make_slug_function(post_type):
     def slug_function(slug):
         published_only = not flask.g.user.is_authenticated
 
@@ -56,9 +46,32 @@ def _create_post_type_url_rules(post_type):
         else:
             return app.views.util.render_template('post_detail.html', post=post)
 
+    return slug_function
+
+
+def _create_post_type_url_rules(post_type):
+    main_rule = '/{0}'
+    paginated_rule = main_rule + '/<int:page>'
+    slug_rule = main_rule + '/<slug>'
+
+    endpoint = post_type.type_url_name
+
+    posts_function = _make_posts_function(post_type)
+
+    APPLICATION.add_url_rule(main_rule, endpoint, posts_function)
+    # TODO not sure if I need to provide the post function again, I should
+    # investigate this.
+    APPLICATION.add_url_rule(paginated_rule, endpoint, posts_function)
+
+    slug_endpoint = 'slug_{0}'.format(endpoint)
+
+    slug_function = _make_slug_function(post_type)
+
     APPLICATION.add_url_rule(slug_rule, slug_endpoint, slug_function)
 
-# Register views for all post types.
+# Register views for all post types. Might want to move this into a function,
+# but for now I'm sticking with the convention I'm using with other views of
+# 'views get registered on module import'
 
 try:
     _post_types = app.models.Post_Type.query.all()

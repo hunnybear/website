@@ -45,7 +45,6 @@ def _show_compose(post=None):
 
         flask.flash('Post Submitted!')
         # TODO maybe if submitted as draft redirect to edit
-        return flask.redirect(flask.url_for(post.post_type.type_url_name))
 
     if post is not None:
         form.title.data = post.title

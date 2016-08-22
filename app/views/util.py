@@ -21,8 +21,4 @@ def render_template( source, **context):
         if post_type.posts:
             post_types.append((post_type.type_url_name, post_type.type_name))
 
-    return flask.render_template(
-        source,
-        post_types=post_types,
-        **context
-    )
+    return flask.render_template(source, post_types=post_types, **context)
