@@ -227,6 +227,11 @@ class Post_Type(DB.Model):
         """
         Return all class types ordered in the order that they should appear in
         UIs.
+
+        *Returns:*
+
+            :``ordered_post_types``:    `list<Post_Type>`   list of Post Types,
+                                                            ordered for UI
         """
 
         return cls.query.order_by(cls.display_priority).all()
