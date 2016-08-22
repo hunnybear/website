@@ -60,13 +60,13 @@ def _show_compose(post=None):
     )
 
 
-@app.application.route('/blog/compose', methods=['GET', 'POST'])
+@app.application.route('/compose', methods=['GET', 'POST'])
 @flask_login.login_required
 def compose():
     return _show_compose()
 
 
-@app.application.route('/blog/edit/<slug>', methods=['GET', 'POST'])
+@app.application.route('/edit/<slug>', methods=['GET', 'POST'])
 @flask_login.login_required
 def edit(slug):
     post = app.models.Post.get_by_slug(slug)
