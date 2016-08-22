@@ -60,7 +60,7 @@ def _create_post_type_url_rules(post_type):
     """
     Create url rules in the flask url rule table for a post type.
     """
-    main_rule = r'/{0}'
+    main_rule = r'/{0}'.format(post_type.type_url_name)
     paginated_rule = main_rule + r'/<int:page>'
     slug_rule = main_rule + r'/<slug>'
 
