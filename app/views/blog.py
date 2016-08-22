@@ -18,8 +18,11 @@ APPLICATION = app.application
 
 
 def _make_posts_function(post_type):
+    """
+    Make a function that can be registered as a view function for a url rule
+    that displays posts by page.
+    """
 
-    # horay closures.
     def posts_function(page=1):
 
         user = flask.g.user
@@ -37,6 +40,10 @@ def _make_posts_function(post_type):
 
 
 def _make_slug_function(post_type):
+    """
+    Make a function that can be registered as a view function for a url rule
+    that displays a post by slug.
+    """
     def slug_function(slug):
         published_only = not flask.g.user.is_authenticated
 
@@ -50,9 +57,12 @@ def _make_slug_function(post_type):
 
 
 def _create_post_type_url_rules(post_type):
-    main_rule = '/{0}'
-    paginated_rule = main_rule + '/<int:page>'
-    slug_rule = main_rule + '/<slug>'
+    """
+    Create url rules in the flask url rule table for a post type.
+    """
+    main_rule = r'/{0}'
+    paginated_rule = main_rule + r'/<int:page>'
+    slug_rule = main_rule + r'/<slug>'
 
     endpoint = post_type.type_url_name
 
@@ -81,7 +91,9 @@ except sqlalchemy.exc.OperationalError:
     # should probably put some better catching here to make sure this doesn't
     # happen after db creation
     _post_types = []
+    APPLICATION.logger.warn('not registering url rules for post types')
 for post_type in _post_types:
     _create_post_type_url_rules(post_type)
+    APPLICATION.logger.info('creating url rules for {0}'.post_type)
 
 app.models.Post_Type.add_observer(_create_post_type_url_rules)
