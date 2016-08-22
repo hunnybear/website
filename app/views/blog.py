@@ -94,6 +94,6 @@ except sqlalchemy.exc.OperationalError:
     APPLICATION.logger.warn('not registering url rules for post types')
 for post_type in _post_types:
     _create_post_type_url_rules(post_type)
-    APPLICATION.logger.info('creating url rules for {0}'.post_type)
+    APPLICATION.logger.info('creating url rules for {0}'.format(post_type))
 
 app.models.Post_Type.add_observer(_create_post_type_url_rules)
