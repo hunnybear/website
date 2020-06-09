@@ -12,7 +12,25 @@ import app.moment
 import app.jinja_util
 from app import config
 
-application = flask.Flask(config.SITE_NAME, template_folder=config.TEMPLATE_DIR)
+_application = None
+
+
+def set_application(application, force=False):
+    global _application
+
+    if _application is not None and not force:
+        raise ValueError("app.application is already set!")
+
+    _application = application
+
+
+def get_application():
+    if application is None:
+        raise app.errors.SetupError("The application is not yet properly set up.")
+    assert isinstance(application, flask.Flask)
+    return application
+
+
 application.config.from_object('app.config')
 
 db = flask_sqlalchemy.SQLAlchemy(application)
